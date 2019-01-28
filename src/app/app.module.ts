@@ -22,9 +22,11 @@ import { DynamicComponentModule } from '../app/dynamic-component/dynamic-compone
 import { DependencyModule } from '../app/dependency/dependency.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import{ TestModule } from '../app/test/test.module';
+import { UsersComponent } from '../app/services/users/users.component';
+  import { from } from 'rxjs';
 @NgModule({
   declarations: [//声明组件
-    AppComponent, HeroesComponentComponent, HeroDetailComponent, MessagesComponent, DashboardComponent
+    AppComponent, HeroesComponentComponent, HeroDetailComponent, MessagesComponent, DashboardComponent,UsersComponent
   
   ],
   imports: [
