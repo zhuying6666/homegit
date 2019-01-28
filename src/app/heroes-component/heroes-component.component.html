@@ -1,0 +1,17 @@
+
+<div>
+    <h1>{{myHeros}}</h1>
+    <br>
+    <label>
+      <span> Hero name : </span> 
+      <input [(ngModel)]="heroName" />
+      <button (click)="addHero(heroName)" class = "addHereo">add</button>   
+    </label>
+    <ul class="heroes">
+       <li *ngFor="let hero of herosList"> 
+         <a  routerLink="/detail/{{hero.id}}"> {{hero.id}}  {{hero.name }}</a>
+         <button (click)="delHero(hero)" class="delHero" title="delete hero">x</button>
+       </li>
+    </ul>
+</div> 
+
