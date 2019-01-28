@@ -1,0 +1,11 @@
+<div class="heroBox">
+  <ul class="heroUl">
+    <li *ngFor="let hero of dashHeros let i = index">
+      
+      <a  routerLink="/detail/{{hero.id}}" class="goodHero" [ngClass]="{'firstGoodHero': i === 0}">{{hero.name}}</a>
+
+    </li>
+  </ul>
+
+</div>
+<app-hero-search></app-hero-search>

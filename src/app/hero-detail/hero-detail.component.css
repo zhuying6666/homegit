@@ -1,0 +1,14 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+.herosIuput {
+    width: 300px;
+    height: 35px;
+    line-height: 35px;
+    text-indent: 15px;
+    color: darkgray;
+}
+.saveHero{
+    margin-left: 20px;
+    cursor: pointer;
+}
