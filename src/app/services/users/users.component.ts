@@ -10,25 +10,30 @@ import { error } from 'util';
 export class UsersComponent implements OnInit {
 
   protected usersData :any ='';
-  protected usersName : string ="zhuying";
-  protected usersPsw : string = '111';
+  protected usersName : string ="admin";
+  protected usersPsw : string = 'admin@123';
   protected error: any;
   constructor(private userHttp :HttpService) { }
 
   ngOnInit() {
   }
+
   login(){
     this.asyncGetToken(this.usersName,this.usersPsw);
-  //  this.getData();
   }
   asyncGetToken( usersName :string , usersPsw : string)
   {
+    alert("asyncGetToken"+usersName+usersPsw);
 
     this.userHttp.asyncGetToken(usersName, usersPsw ).subscribe(
       (data) => {
         if(data['access']){
-          localStorage.setItem('access_token', data['access']);
-          
+          localStorage.setItem('access_token', data['access']);   
+
+        }
+        else if(data['refresh']){
+          localStorage.setItem('refresh',data['refresh']);
+
         }
         else
         {
@@ -43,24 +48,14 @@ export class UsersComponent implements OnInit {
   getData ()
   {
     let params ={
-      method: 'post',
-      url:'',
-      data: {
-          users:1
-      }
+      method: 'get',
+      url:'https://tcarls-int.bba-app.com/rest-api/v1/questions?limit=10&offset=0',
     }
     this.userHttp.request(params).subscribe(
       (data) => {
         this.usersData = data; 
       },   
-      error => {
-        this.error = error // error path
-        console.error(this.error);
-        
-      }
     )
-  
-    
   }
 
 }

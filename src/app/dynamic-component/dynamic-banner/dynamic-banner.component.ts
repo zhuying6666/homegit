@@ -25,7 +25,7 @@ export class DynamicBannerComponent implements OnInit {
   }
 
   loadComponent() {
-    console.log(this.ads);
+    // console.log(this.ads);
     this.currentAdIndex = (this.currentAdIndex + 1) % this.ads.length;
     let adItem = this.ads[this.currentAdIndex];
 

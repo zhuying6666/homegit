@@ -24,6 +24,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import{ TestModule } from '../app/test/test.module';
 import { UsersComponent } from '../app/services/users/users.component';
   import { from } from 'rxjs';
+import { httpInterceptorProviders } from '../app/services/index';
+
 @NgModule({
   declarations: [//声明组件
     AppComponent, HeroesComponentComponent, HeroDetailComponent, MessagesComponent, DashboardComponent,UsersComponent
@@ -41,11 +43,14 @@ import { UsersComponent } from '../app/services/users/users.component';
     ReactiveFormsModule,
     TestModule,
     HttpClientInMemoryWebApiModule.forRoot(
-      InMemoryDataService, { dataEncapsulation: false }
+      InMemoryDataService, { 
+        dataEncapsulation: false, 
+        passThruUnknownUrl:true //在使用mock时也可以使用真的接口调试
+      }
     )
   ],
   exports:[ HeroDetailComponent ],
-  providers: [],//声明服务
+  providers: [httpInterceptorProviders],//声明服务
   bootstrap: [AppComponent]
 })
 export class AppModule { }

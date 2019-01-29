@@ -25,19 +25,23 @@ export class HttpService {
    * 
    */
   public request(params :any) : Observable < any >{
-    const access_token = localStorage.getItem("access_token")
+    const access_token = localStorage.getItem("access_token");
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json',
-        'Authorization': access_token
+        'Authorization': 'Token' + ' ' + access_token
       })
     };
+    
+    // const httpOptions = new HttpHeaders().set('Authorization', 'my-new-auth-token');
     if (params['method'] == 'post' || params['method'] == 'POST') {
+      // alert('request'+params['url']);
+
       //post请求
       return this.post(params['url'], params['data'], httpOptions);
     } 
     else if(params['method'] == 'get' || params['method'] == 'get'){
       //get请求
+
       return this.get(params['url'], httpOptions);
     }
     else if(params['method'] == 'delete' || params['method'] == 'delete'){
@@ -48,8 +52,7 @@ export class HttpService {
       //delete请求
       return this.put(params['url'], params['data'], httpOptions);
     }
-    
-
+   
   }
   
   /**
@@ -61,8 +64,7 @@ export class HttpService {
   public post(url :any ,data:any,httpOption:any) : Observable < any >{
     return this.http.post(url,data,httpOption)
     .pipe(
-      retry(3),//请求失败最多请求3次
-      tap(_error => this.log(error) ),
+      tap( data => this.log(data) ),
       catchError(this.handleError)
     );
   }
@@ -73,10 +75,11 @@ export class HttpService {
    * @param httpOption 
    */
   public get(url :any ,httpOption:any) : Observable < any > {
+    // alert(`get${url}`);
+
     return this.http.get(url,httpOption)
     .pipe(
-      retry(3),//请求失败最多请求3次
-      tap(_error => this.log(error) ),
+      tap( data => this.log(data) ),
       catchError(this.handleError)
     );
   }
@@ -88,8 +91,7 @@ export class HttpService {
   public delete(url :any ,httpOption:any) : Observable < any >{
     return this.http.delete(url,httpOption)
     .pipe(
-      retry(3),//请求失败最多请求3次
-      tap(_error => this.log(error) ),
+      tap( data => this.log(data) ),
       catchError(this.handleError)
     );
   }
@@ -102,8 +104,7 @@ export class HttpService {
   public put(url :any ,data:any, httpOption:any) : Observable < any > {
     return this.http.put(url,httpOption)
     .pipe(
-      retry(3),//请求失败最多请求3次
-      tap(_error => this.log(error) ),
+      tap( data => this.log(data) ),
       catchError(this.handleError)
     );
 
@@ -118,8 +119,7 @@ export class HttpService {
   public patch(url: string, params: any, headers: any) : Observable < any >{
     return this.http.patch(url, params, { headers: headers })
     .pipe(
-      retry(3),//请求失败最多请求3次
-      tap(_error => this.log(error) ),
+      tap( data => this.log(data) ),
       catchError(this.handleError)
     );
   }
@@ -138,13 +138,27 @@ export class HttpService {
 
 
   public handleError(error: HttpErrorResponse) {
+    //检查是否联网
+    if (navigator.onLine) {
+      console.log("网络已连接");
+    } else {
+      //执行离线状态时的任务
+      console.log("请检查你的电脑是否联网");
+    }
     if (error.error instanceof ErrorEvent) {
       console.error('An error occurred:', error.error.message);
     } else {
-      console.error(
-        `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
+      console.error(error)
+  
     }
+    if(error.status === 401){
+      const  refresh_token = localStorage.getItem('refresh');
+      this.asyncRefreshToken(refresh_token)
+    }
+    else if(error.status === 500){
+      console.error('服务器错误')
+    }
+
     return throwError(
       'Something bad happened; please try again later.');
   };
@@ -154,23 +168,24 @@ export class HttpService {
   *获取token 调取后台接口
   */
   asyncGetToken(usersName :string , usersPsw : string) : Observable < any >{
+    // alert("asyncGetToken"+usersName);
     return this.request({
       method: 'post',
-      url: 'api/dashHeros'+usersName+usersPsw,
-      data :{
-        Name : usersName,
-        psw : usersPsw
-      }
+      url: 'https://tcarls-int.bba-app.com/rest-api/v1/tokens',
+      data: {
+        account:usersName,
+        password:usersPsw,
+      },
     });
   }
 
   /*
   *刷新token 调取后台接口
   */
-  asyncRefreshToken(refreshToken: any,usersName :string , usersPsw : string) : Observable < any >{
+  asyncRefreshToken(refreshToken: any) : Observable < any >{
     return this.request({
       method: 'post',
-      url: 'api/dashHeros'+usersName+usersPsw+refreshToken,
+      url: 'https://tcarls-int.bba-app.com/rest-api/v1/tokens/refresh',
       data: {
         refresh:refreshToken
       },
