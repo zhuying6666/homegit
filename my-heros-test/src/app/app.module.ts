@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 // 当使用双向数据绑定时需要引入FormsModule,并在@NgModule的装饰器imports内添加FormsModule
-import { FormsModule } from '@angular/forms';
+// import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeroesComponentComponent } from './heroes-component/heroes-component.component';
@@ -16,10 +16,19 @@ import { InMemoryDataService }  from './in-memory-data.service';
 import { SearchModule } from '../app/search/search.module'
 //引入TopHerosModule模块
 import { TopHerosModule} from '../app/top-heros/top-heros.module'
+// 引入DynamicComponentModule模块
+import { DynamicComponentModule } from '../app/dynamic-component/dynamic-component.module';
+//引入模块
+import { DependencyModule } from '../app/dependency/dependency.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import{ TestModule } from '../app/test/test.module';
+import { UsersComponent } from '../app/services/users/users.component';
+  import { from } from 'rxjs';
+import { httpInterceptorProviders } from '../app/services/index';
 
 @NgModule({
   declarations: [//声明组件
-    AppComponent, HeroesComponentComponent, HeroDetailComponent, MessagesComponent, DashboardComponent, 
+    AppComponent, HeroesComponentComponent, HeroDetailComponent, MessagesComponent, DashboardComponent,UsersComponent
   
   ],
   imports: [
@@ -29,12 +38,19 @@ import { TopHerosModule} from '../app/top-heros/top-heros.module'
     HttpClientModule,
     SearchModule,
     TopHerosModule,
+    DynamicComponentModule,
+    DependencyModule,
+    ReactiveFormsModule,
+    TestModule,
     HttpClientInMemoryWebApiModule.forRoot(
-      InMemoryDataService, { dataEncapsulation: false }
+      InMemoryDataService, { 
+        dataEncapsulation: false, 
+        passThruUnknownUrl:true //在使用mock时也可以使用真的接口调试
+      }
     )
   ],
   exports:[ HeroDetailComponent ],
-  providers: [],//声明服务
+  providers: [httpInterceptorProviders],//声明服务
   bootstrap: [AppComponent]
 })
 export class AppModule { }

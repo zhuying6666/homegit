@@ -1,9 +1,0 @@
-<div *ngIf="herosMessage.messages.length">
-    <h1 [ngStyle]="{'color': 'red'}"> Message </h1>
-    <button (click)="herosMessage.clear()">
-      <span>clear</span>
-    </button>
-    <ul>
-      <li *ngFor="let messageItem of herosMessage.messages"> {{messageItem}}</li>
-    </ul>
-</div>
