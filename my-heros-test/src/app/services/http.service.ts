@@ -7,17 +7,15 @@ import { catchError,retry, map, tap } from 'rxjs/operators';
 import { from } from 'rxjs';
 import { error } from '@angular/compiler/src/util';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
-  public errorMsg : any =[];
+
   constructor(
      private msgService : MsgService,
-     public http : HttpClient,
-     private router: Router
+     public http : HttpClient
     
     ) { }
 
@@ -67,8 +65,7 @@ export class HttpService {
     return this.http.post(url,data,httpOption)
     .pipe(
       tap( data => this.log(data) ),
-      catchError((error) => this.handleError(error))
-
+      catchError(this.handleError)
     );
   }
 
@@ -78,10 +75,12 @@ export class HttpService {
    * @param httpOption 
    */
   public get(url :any ,httpOption:any) : Observable < any > {
+    // alert(`get${url}`);
+
     return this.http.get(url,httpOption)
     .pipe(
       tap( data => this.log(data) ),
-      catchError((error) => this.handleError(error))
+      catchError(this.handleError)
     );
   }
   /**
@@ -93,7 +92,7 @@ export class HttpService {
     return this.http.delete(url,httpOption)
     .pipe(
       tap( data => this.log(data) ),
-      catchError((error) => this.handleError(error))
+      catchError(this.handleError)
     );
   }
   /**
@@ -106,7 +105,7 @@ export class HttpService {
     return this.http.put(url,httpOption)
     .pipe(
       tap( data => this.log(data) ),
-      catchError((error) => this.handleError(error))
+      catchError(this.handleError)
     );
 
   }
@@ -121,7 +120,7 @@ export class HttpService {
     return this.http.patch(url, params, { headers: headers })
     .pipe(
       tap( data => this.log(data) ),
-      catchError((error) => this.handleError(error))
+      catchError(this.handleError)
     );
   }
 
@@ -137,39 +136,29 @@ export class HttpService {
    * @param result 
    */
 
+
   public handleError(error: HttpErrorResponse) {
-    let count =0;
     //检查是否联网
     if (navigator.onLine) {
       console.log("网络已连接");
-
     } else {
-      //把错误日志打印到文件中
-      this.errorMsg.push(`请检查你的电脑是否联网`);
+      //执行离线状态时的任务
+      console.log("请检查你的电脑是否联网");
     }
     if (error.error instanceof ErrorEvent) {
       console.error('An error occurred:', error.error.message);
-      //把错误日志打印到文件中
-      this.errorMsg.push(`'An error occurred:', ${error.error.message}`);
     } else {
-      console.error(error);
+      console.error(error)
+  
+    }
+    if(error.status === 401){
+      const  refresh_token = localStorage.getItem('refresh');
+      this.asyncRefreshToken(refresh_token)
+    }
+    else if(error.status === 500){
+      console.error('服务器错误')
     }
 
-    if(error.status === 401){
-      if(count ===0 ){
-        const  refresh_token = localStorage.getItem('refresh');
-        this.asyncRefreshToken(refresh_token);
-        count=count+1;  
-      }else{
-        this.router.navigate([`/users`]);
-      }
-    }
-    if(error.status === 500)
-    {
-      console.error('服务器错误');
-      //把错误日志打印到文件中
-      this.errorMsg.push(`error.status === 500 服务器错误`);
-    }
     return throwError(
       'Something bad happened; please try again later.');
   };
@@ -202,4 +191,6 @@ export class HttpService {
       },
     });
   }
+
+
 }
